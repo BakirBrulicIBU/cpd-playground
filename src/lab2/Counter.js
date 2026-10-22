@@ -5,6 +5,7 @@ import { styles } from "./styles";
 export default function Counter() {
   const [count, setCount] = useState(0);
   const atZero = count === 0;
+  const [liked, setLiked] = useState(false);
 
   return (
     <View style={styles.screen}>
@@ -24,6 +25,15 @@ export default function Counter() {
           <Text style={styles.buttonText}>Reset</Text>
         </Pressable>
       </View>
+
+      <Pressable
+        onPress={() => setLiked((l) => !l)}
+        style={[styles.button, liked && { backgroundColor: "#C0392B" }]}
+      >
+        <Text style={styles.buttonText}>
+          {liked ? "Liked (13)" : "Like (12)"}
+        </Text>
+      </Pressable>
     </View>
   );
 }
