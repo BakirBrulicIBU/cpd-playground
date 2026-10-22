@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Text, View } from "react-native";
+import AddTodo from "./AddTodo";
+import FilterBar from "./FilterBar";
+import TodoItem from "./TodoItem";
 import { styles } from "./styles";
 
 export default function Todo() {
@@ -7,16 +10,10 @@ export default function Todo() {
     { id: "1", title: "Install Expo Go", done: true },
     { id: "2", title: "Finish Lab 2", done: false },
   ]);
-  const [text, setText] = useState("");
   const [filter, setFilter] = useState("all");
 
-  function addTodo() {
-    if (!text.trim()) return;
-    setTodos([
-      ...todos,
-      { id: Date.now().toString(), title: text.trim(), done: false },
-    ]);
-    setText("");
+  function addTodo(title) {
+    setTodos([...todos, { id: Date.now().toString(), title, done: false }]);
   }
 
   function removeTodo(id) {
@@ -28,60 +25,25 @@ export default function Todo() {
   }
 
   const leftCount = todos.filter((t) => !t.done).length;
-
   const visible = todos.filter((t) =>
     filter === "active" ? !t.done : filter === "done" ? t.done : true,
   );
 
   return (
     <View style={styles.screen}>
-      <View style={styles.row}>
-        <TextInput
-          value={text}
-          onChangeText={setText}
-          placeholder="New task"
-          style={[styles.input, { flex: 1 }]}
-        />
-        <Pressable onPress={addTodo} style={styles.button}>
-          <Text style={styles.buttonText}>Add</Text>
-        </Pressable>
-      </View>
-
-      <View style={styles.row}>
-        {["all", "active", "done"].map((f) => (
-          <Pressable
-            key={f}
-            onPress={() => setFilter(f)}
-            style={[
-              styles.button,
-              filter !== f && { backgroundColor: "#9AA6B5" },
-            ]}
-          >
-            <Text style={styles.buttonText}>
-              {f[0].toUpperCase() + f.slice(1)}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
-
+      <AddTodo onAdd={addTodo} />
+      <FilterBar filter={filter} onChange={setFilter} />
       <Text style={styles.muted}>{leftCount} left</Text>
 
       {todos.length === 0 && <Text style={styles.muted}>No tasks yet</Text>}
 
       {visible.map((todo) => (
-        <View
+        <TodoItem
           key={todo.id}
-          style={[styles.card, styles.row, { alignItems: "center" }]}
-        >
-          <Pressable onPress={() => toggleTodo(todo.id)} style={{ flex: 1 }}>
-            <Text style={todo.done && { textDecorationLine: "line-through" }}>
-              {todo.title}
-            </Text>
-          </Pressable>
-          <Pressable onPress={() => removeTodo(todo.id)} style={styles.button}>
-            <Text style={styles.buttonText}>Delete</Text>
-          </Pressable>
-        </View>
+          todo={todo}
+          onToggle={toggleTodo}
+          onRemove={removeTodo}
+        />
       ))}
     </View>
   );
