@@ -22,6 +22,12 @@ export default function Todo() {
     setTodos(todos.filter((t) => t.id !== id));
   }
 
+  function toggleTodo(id) {
+    setTodos(todos.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
+  }
+
+  const leftCount = todos.filter((t) => !t.done).length;
+
   return (
     <View style={styles.screen}>
       <View style={styles.row}>
@@ -36,7 +42,7 @@ export default function Todo() {
         </Pressable>
       </View>
 
-      <Text style={styles.muted}>{todos.length} tasks</Text>
+      <Text style={styles.muted}>{leftCount} left</Text>
 
       {todos.length === 0 && <Text style={styles.muted}>No tasks yet</Text>}
 
@@ -45,7 +51,11 @@ export default function Todo() {
           key={todo.id}
           style={[styles.card, styles.row, { alignItems: "center" }]}
         >
-          <Text style={{ flex: 1 }}>{todo.title}</Text>
+          <Pressable onPress={() => toggleTodo(todo.id)} style={{ flex: 1 }}>
+            <Text style={todo.done && { textDecorationLine: "line-through" }}>
+              {todo.title}
+            </Text>
+          </Pressable>
           <Pressable onPress={() => removeTodo(todo.id)} style={styles.button}>
             <Text style={styles.buttonText}>Delete</Text>
           </Pressable>
